@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+#$ -P short
+#$ -j y
+#$ -cwd
+#$ -o /dev/null
+#$ -e /dev/null
+
+dir=$1
+run=$2
+output=$3
+
+singularity exec gerda-sw-all_active.sif \
+    root -l -q -b 'tier4ize.C("'$dir'", "'$run'", "'$output'")' &> $(echo $output | cut -f 1 -d '.').out

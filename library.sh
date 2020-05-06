@@ -134,3 +134,28 @@ process_simulation() {
 
     submit_mage_jobs "$sim_dir/${name_id}/macros/${name_id}" $start_id $(expr $start_id + $n_macros - 1)
 }
+
+submit_tier4izer_job() {
+
+    local sim_id="t4z-${1}"
+    local run_id="$2"
+    local outname="$sim_dir/$1/$sim_id.root"
+
+    local do_rerun=false
+    if [[ ! -f "$outname" ]]; then
+        do_rerun=true
+    fi
+
+    if `which qsub &> /dev/null`; then
+        \qstat -r 2>&1 | grep 'Full jobname:' | grep "$sim_id" >/dev/null
+        local found=$?
+        if $found; then
+            print_log warn "'$sim_id' jobs look already running, won't submit"
+        else
+            \qsub -N "$sim_id" -- ./tier4izer.qsub "$sim_dir/$1/output" "$run_id" "$outname"
+        fi
+    # elif ... add your cluster manager code here
+    else
+        print_log err "could not find suitable cluster manager"
+    fi
+}
