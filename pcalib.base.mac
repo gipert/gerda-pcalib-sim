@@ -1,0 +1,49 @@
+/tracking/verbose                                  0
+/MG/manager/mglog                                  trace
+/MG/manager/seedWithDevRandom
+
+/MG/processes/realm                                BBdecay
+/MG/processes/lowenergy                            true
+/MG/processes/useNoHadPhysics                      true
+/MG/processes/optical                              true
+/MG/geometry/cherenkov                             -1
+
+/MG/geometry/detector                              GerdaArray
+/MG/geometry/database                              false
+/MG/geometry/lock/type                             PhaseII_DN500
+/MG/geometry/detector/geometryfile                 geometry.json
+/MG/geometry/detector/matrixfile                   matrix-PhaseII-dec15.json
+/MG/geometry/general/constructLArInstrumentation   true
+/MG/geometry/general/constructMiniShroud           true
+/MG/geometry/LArInst/SetFiberCoverage              SETCOVERAGE
+/MG/geometry/LArInst/SegmentedFiberShroudRotation  -141.0 deg
+
+/MG/geometry/general/constructcalibration          true
+/MG/geometry/detector/calibration/sourcez_S1       SETS1POS
+/MG/geometry/detector/calibration/sourcez_S2       SETS2POS
+/MG/geometry/detector/calibration/sourcez_S3       SETS3POS
+/MG/geometry/detector/calibration/CuCap            true
+
+/MG/materials/LAr/XUVAbsLength                     SETABSORPTION cm
+/MG/materials/LAr/PhotonYieldPerMeV                28120
+
+/MG/eventaction/reportingfrequency                 1000
+/MG/eventaction/rootschema                         GerdaInstrumentedArray
+/MG/eventaction/rootfilename                       SETROOTNAME
+
+/MG/output/saveOnlyEventsWithEnergyDeposit         true
+/MG/output/LArInst/ApplyLArInstGeEnergyCut         true
+
+/MG/output/LArInst/SetGeEnergyCutLow               SETLOWCUT MeV
+/MG/output/LArInst/SetGeEnergyCutHigh              SETHIGHCUT MeV
+
+/run/initialize
+
+/MG/generator/confine                              volume
+/MG/generator/volume                               calibration_source_inner_SETSX
+/MG/generator/select                               G4gun
+/gun/particle                                      ion
+/gun/ion                                           SETZ SETA
+/gun/energy                                        0.0 keV
+
+/run/beamOn                                        SETEVENTS

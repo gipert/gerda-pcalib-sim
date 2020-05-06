@@ -1,0 +1,3 @@
+[submodule "meta/gerda-metadata"]
+	path = meta/gerda-metadata
+	url = git@github.com:mppmu/gerda-metadata
