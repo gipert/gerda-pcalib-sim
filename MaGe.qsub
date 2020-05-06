@@ -7,7 +7,10 @@
 #$ -o /dev/null
 #$ -e /dev/null
 
-macro=${1}-${SGE_TASK_ID}.mac
+macro="${1}-`printf "%05d" ${SGE_TASK_ID}`.mac"
+logfile="${macro%.*}.out"
 
-singularity exec gerda-sw-all_active.sif /usr/bin/time -v \
-    MaGe "$macro" &> $(echo $macro | cut -f 1 -d '.').out
+echo "Container: `readlink -f ../gerda-sw-all_active.sif`" > $logfile
+
+singularity exec --cleanenv ../gerda-sw-all_active.sif /usr/bin/time -v \
+    MaGe "$macro" &>> $logfile

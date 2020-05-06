@@ -6,7 +6,6 @@
 /MG/processes/lowenergy                            true
 /MG/processes/useNoHadPhysics                      true
 /MG/processes/optical                              true
-/MG/geometry/cherenkov                             -1
 
 /MG/geometry/detector                              GerdaArray
 /MG/geometry/database                              false
@@ -17,11 +16,12 @@
 /MG/geometry/general/constructMiniShroud           true
 /MG/geometry/LArInst/SetFiberCoverage              SETCOVERAGE
 /MG/geometry/LArInst/SegmentedFiberShroudRotation  -141.0 deg
+/MG/geometry/cherenkov                             -1
 
 /MG/geometry/general/constructcalibration          true
-/MG/geometry/detector/calibration/sourcez_S1       SETS1POS
-/MG/geometry/detector/calibration/sourcez_S2       SETS2POS
-/MG/geometry/detector/calibration/sourcez_S3       SETS3POS
+/MG/geometry/detector/calibration/sourcez_S1       SETS1POS mm
+/MG/geometry/detector/calibration/sourcez_S2       SETS2POS mm
+/MG/geometry/detector/calibration/sourcez_S3       SETS3POS mm
 /MG/geometry/detector/calibration/CuCap            true
 
 /MG/materials/LAr/XUVAbsLength                     SETABSORPTION cm

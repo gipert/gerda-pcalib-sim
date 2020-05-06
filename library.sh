@@ -1,6 +1,6 @@
 template_macro=./pcalib.base.mac
 sim_dir=sim
-dryrun=true
+dryrun=false
 
 print_log() {
     case "$1" in
@@ -31,7 +31,7 @@ dump_macro() {
     local n_events=$6
     local rootfile=$7
 
-    local source_pos_default=725
+    local source_pos_default=7250
 
     local sed_cmd=" \
         s|SETROOTNAME|$rootfile|g; \
@@ -95,10 +95,10 @@ submit_mage_jobs() {
         if `which qsub &> /dev/null`; then
             \qstat -r 2>&1 | grep 'Full jobname:' | grep "$sim_id" >/dev/null
             local found=$?
-            if $found; then
-                print_log warn "'$sim_id' jobs look already running, won't submit"
+            if [[ $found == 1 ]]; then
+                \qsub -N "$sim_id" -t ${start_idx}-${stop_idx} ../MaGe.qsub "$sim_id/macros/$sim_id"
             else
-                \qsub -N "$sim_id" -t ${start_idx}-${stop_idx} -- ./MaGe.qsub "$sim_id"
+                print_log warn "'$sim_id' jobs look already running, won't submit"
             fi
         # elif ... add your cluster manager code here
         else
@@ -111,7 +111,7 @@ submit_mage_jobs() {
 
 process_simulation() {
 
-    print_log warn "running in dry-run mode, no jobs will be actually sent"
+    $dryrun && print_log warn "running in dry-run mode, no jobs will be actually sent"
 
     local nucleus=$1
     local source_number=$2
@@ -120,7 +120,7 @@ process_simulation() {
     local fiber_cov=$5
     local n_events_per_mac=$6
     local n_macros=$7
-    local start_id=${8:-0}
+    local start_id=${8:-1}
 
     local name_id="${nucleus}-S${source_number}-${source_pos}-${abs_length}cm-${fiber_cov}cov"
     print_log info "creating '$name_id' macros"
@@ -132,7 +132,7 @@ process_simulation() {
             > "$sim_dir/${name_id}/macros/${name_id}-${i}.mac"
     done
 
-    submit_mage_jobs "$sim_dir/${name_id}/macros/${name_id}" $start_id $(expr $start_id + $n_macros - 1)
+    submit_mage_jobs $name_id $start_id $(expr $start_id + $n_macros - 1)
 }
 
 submit_tier4izer_job() {
@@ -149,10 +149,10 @@ submit_tier4izer_job() {
     if `which qsub &> /dev/null`; then
         \qstat -r 2>&1 | grep 'Full jobname:' | grep "$sim_id" >/dev/null
         local found=$?
-        if $found; then
-            print_log warn "'$sim_id' jobs look already running, won't submit"
+        if [[ $found == 1 ]]; then
+            \qsub -N "$sim_id" ./tier4izer.qsub "$sim_dir/$1/output" "$run_id" "$outname"
         else
-            \qsub -N "$sim_id" -- ./tier4izer.qsub "$sim_dir/$1/output" "$run_id" "$outname"
+            print_log warn "'$sim_id' jobs look already running, won't submit"
         fi
     # elif ... add your cluster manager code here
     else
