@@ -1,17 +1,17 @@
 using namespace gada;
 
-void tier4ize(std::string dir, std::string run_id, std::string outname) {
+void tier4ize(std::string dir, int run_id, std::string outname) {
 
-    std::string kMappingFile
-    std::string kResolutionFile
-    std::string kEnergyReconstruction
-    std::string kTransitionsFile
-    std::string kGeometryFile
-    std::string kGedSettingsFile
-    ULong64_t kTimestamp
+    std::string kMappingFile;
+    std::string kResolutionFile;
+    std::string kEnergyReconstruction;
+    std::string kTransitionsFile;
+    std::string kGeometryFile;
+    std::string kGedSettingsFile;
+    ULong64_t kTimestamp;
 
     switch (run_id) {
-        case "run76" : {
+        case 76 : {
             kMappingFile          = "meta/mapping-spmMerged.json";
             kResolutionFile       = "meta/ged-resolution-super-calib.json";
             kEnergyReconstruction = "Zac";
@@ -21,7 +21,7 @@ void tier4ize(std::string dir, std::string run_id, std::string outname) {
             kTimestamp            = 1486293301;
             break;
         }
-        case "run68" : {
+        case 68 : {
             kMappingFile          = "meta/mapping-spmMerged.json";
             kResolutionFile       = "meta/ged-resolution-super-calib.json";
             kEnergyReconstruction = "Zac";

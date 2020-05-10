@@ -139,7 +139,8 @@ submit_tier4izer_job() {
 
     local sim_id="t4z-${1}"
     local run_id="$2"
-    local outname="$sim_dir/$1/$sim_id.root"
+    local outname="$sim_dir/$1/${sim_id}-run${2}.root"
+    local job="${sim_id}-run${2}"
 
     local do_rerun=false
     if [[ ! -f "$outname" ]]; then
@@ -147,15 +148,25 @@ submit_tier4izer_job() {
     fi
 
     if `which qsub &> /dev/null`; then
-        \qstat -r 2>&1 | grep 'Full jobname:' | grep "$sim_id" >/dev/null
+        \qstat -r 2>&1 | grep 'Full jobname:' | grep "$job" >/dev/null
         local found=$?
         if [[ $found == 1 ]]; then
-            \qsub -N "$sim_id" ./tier4izer.qsub "$sim_dir/$1/output" "$run_id" "$outname"
+            \qsub -N "$job" ./tier4izer.qsub "$sim_dir/$1/output" "$run_id" "$outname"
         else
-            print_log warn "'$sim_id' jobs look already running, won't submit"
+            print_log warn "'$job' jobs look already running, won't submit"
         fi
     # elif ... add your cluster manager code here
     else
         print_log err "could not find suitable cluster manager"
     fi
+}
+
+submit_all_tier4izer_jobs() {
+    for sim in `\ls "$sim_dir"`; do
+        if [[ "$sim" =~ '^Bi214*' ]]; then
+            submit_tier4izer_job $sim 76
+        elif [[ "$sim" =~ '^Tl208*' ]]; then
+            submit_tier4izer_job $sim 68
+        fi
+    done
 }
