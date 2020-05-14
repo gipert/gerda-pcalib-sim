@@ -172,6 +172,6 @@ submit_all_tier4izer_jobs() {
 }
 
 transfer_to_lngs() {
-    \rsync -vhut --progress `\find "$sim_dir" -name 't4z-*.root'` \
+    \rsync -vhut --progress `\find "$sim_dir" -maxdepth 2 -name 't4z-*.root'` \
         `whoami`@gerda-login.lngs.infn.it:/nfs/gerda6/shared/gerda-simulations/gerda-pcalib-sim
 }
