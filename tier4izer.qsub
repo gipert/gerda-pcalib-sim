@@ -10,5 +10,7 @@ dir=$1
 run=$2
 output=$3
 
+echo "Container: `readlink -f gerda-sw-all_active.sif`" > $logfile
+
 singularity exec gerda-sw-all_active.sif \
     root -l -q -b 'tier4ize.C("'$dir'", '$run', "'$output'")' &> "${output%.*}.out"
