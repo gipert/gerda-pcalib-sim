@@ -175,3 +175,18 @@ transfer_to_lngs() {
     \rsync -vhut --progress `\find "$sim_dir" -maxdepth 2 -name 't4z-*.root'` \
         `whoami`@gerda-login.lngs.infn.it:/nfs/gerda6/shared/gerda-simulations/gerda-pcalib-sim
 }
+
+rm_all_tier4ized_files() {
+    echo -e -n "\033[97;1mINFO:\033[0m This will remove all t4z-*.root files in '$sim_dir', are you sure? [y/n] "
+    local ans
+    while read ans; do
+        if [[ "$ans" == "y" ]]; then
+            rm `find "$sim_dir" -maxdepth 2 -name 't4z-*.root'`
+            break
+        elif [[ "$ans" == "n" ]]; then
+            break;
+        else
+            echo "Please type 'y' or 'n'"
+        fi
+    done
+}
