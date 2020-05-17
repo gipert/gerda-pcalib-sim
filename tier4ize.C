@@ -61,23 +61,23 @@ void tier4ize(std::string dir, int run_id, std::string outname) {
         return;
     }
 
+    TChain sim("fTree");
+
     TFile* tf;
     for (auto f : filelist) {
         tf = TFile::Open(f.c_str());
         auto obj = dynamic_cast<TParameter<long>*>(tf->Get("NumberOfPrimaries"));
         if (!obj) {
             std::cerr << "ERROR: could not find NumberOfPrimaries object in file '"
-                      << f << "', aborting" << std::endl;
-            return;
+                      << f << "', it will not be processed" << std::endl;
+            continue;
         }
+        sim.Add(f.c_str());
         primaries += obj->GetVal();
         tf->Close();
     }
 
     setenv("MU_CAL", "meta/gerda-metadata/config/_aux/geruncfg", 1);
-
-    TChain sim("fTree");
-    sim.Add((dir + "/*.root").c_str());
 
     T4SimConfig config;
     config.LoadMapping(kMappingFile);

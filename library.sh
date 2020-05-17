@@ -68,6 +68,21 @@ dump_macro() {
     \sed "$sed_cmd" "$template_macro"
 }
 
+job_exists() {
+
+    # cache job list
+    if [[ "$joblist" == "" ]]; then
+        joblist=`\qstat -r 2>&1 | grep 'Full jobname:'`
+    fi
+
+    if `which qsub &> /dev/null`; then
+        echo "$joblist" | grep "$1" >/dev/null
+        [[ $? == 1 ]] && return 1 || return 0
+    # elif ... add your cluster manager code here
+    else
+        print_log err "could not find suitable cluster manager"
+    fi
+}
 
 submit_mage_jobs() {
 
@@ -92,17 +107,10 @@ submit_mage_jobs() {
     fi
 
     if [[ $dryrun == false ]]; then
-        if `which qsub &> /dev/null`; then
-            \qstat -r 2>&1 | grep 'Full jobname:' | grep "$sim_id" >/dev/null
-            local found=$?
-            if [[ $found == 1 ]]; then
-                \qsub -N "$sim_id" -t ${start_idx}-${stop_idx} ../MaGe.qsub "$sim_id/macros/$sim_id"
-            else
-                print_log warn "'$sim_id' jobs look already running, won't submit"
-            fi
-        # elif ... add your cluster manager code here
+        if job_exists "$sim_id"; then
+            print_log warn "'$sim_id' jobs look already running, won't submit"
         else
-            print_log err "could not find suitable cluster manager"
+            \qsub -N "$sim_id" -t ${start_idx}-${stop_idx} ../MaGe.qsub "$sim_id/macros/$sim_id"
         fi
     fi
 
@@ -142,22 +150,16 @@ submit_tier4izer_job() {
     local outname="$sim_dir/$1/${sim_id}-run${2}.root"
     local job="${sim_id}-run${2}"
 
-    local do_rerun=false
-    if [[ ! -f "$outname" ]]; then
-        do_rerun=true
-    fi
-
-    if `which qsub &> /dev/null`; then
-        \qstat -r 2>&1 | grep 'Full jobname:' | grep "$job" >/dev/null
-        local found=$?
-        if [[ $found == 1 ]]; then
+    if job_exists "$job"; then
+        print_log warn "'$job' jobs look already running, won't submit"
+    elif [[ -f "$outname" ]]; then
+        print_log warn "output file '$outname' exists, won't submit"
+    else
+        if [[ $dryrun == false ]]; then
             \qsub -N "$job" ./tier4izer.qsub "$sim_dir/$1/output" "$run_id" "$outname"
         else
-            print_log warn "'$job' jobs look already running, won't submit"
+            print_log info "would have sent '$job' job"
         fi
-    # elif ... add your cluster manager code here
-    else
-        print_log err "could not find suitable cluster manager"
     fi
 }
 
@@ -177,11 +179,11 @@ transfer_to_lngs() {
 }
 
 rm_all_tier4ized_files() {
-    echo -e -n "\033[97;1mINFO:\033[0m This will remove all t4z-*.root files in '$sim_dir', are you sure? [y/n] "
+    echo -e -n "\033[97;1mINFO:\033[0m This will remove all t4z-*.(root|out) files in '$sim_dir', are you sure? [y/n] "
     local ans
     while read ans; do
         if [[ "$ans" == "y" ]]; then
-            rm `find "$sim_dir" -maxdepth 2 -name 't4z-*.root'`
+            rm `find "$sim_dir" -maxdepth 2 -name 't4z-*' | grep -E '*\.(root|out)'`
             break
         elif [[ "$ans" == "n" ]]; then
             break;
