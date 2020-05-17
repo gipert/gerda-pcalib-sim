@@ -36,7 +36,7 @@
         "GD91D" :   {"model": "linear", "fccd-nm":  990000, "dlf": 0.36},
         "GD32D" :   {"model": "linear", "fccd-nm":  770000, "dlf": 0.31},
         "GD89A" :   {"model": "linear", "fccd-nm":  990000, "dlf": 0.19},
-        "ANG1"    : {"model": "linear", "fccd-nm": 1800000},
+        "ANG1"    : {"model": "hard",   "fccd-nm": 1800000},
         "GTF112"  : {"model": "hard",   "fccd-nm":  400000},
         "GTF32"   : {"model": "hard",   "fccd-nm":  400000},
         "GTF45_2" : {"model": "hard",   "fccd-nm":  400000}
